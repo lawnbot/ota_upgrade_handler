@@ -1,7 +1,7 @@
 # ota_upgrade_handler
 
-A new flutter plugin project to download on Android devices an APK and install it.
-The download is done in Dart to reduces dependencies.
+A flutter plugin project to download on Android devices an APK and install it.
+The download is done in Dart to reduce the need for external dependencies.
 
 ## Getting Started
 
