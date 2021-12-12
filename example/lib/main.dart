@@ -8,24 +8,26 @@ import 'package:ota_upgrade_handler/ota_upgrade_handler.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  String _versionControlResult = "";
+  final String _versionControlResult = "";
 
   OtaUpgradeStatus currentEvent = OtaUpgradeStatus(
-      state: OtaUpgradeState.DOWNLOAD_NOT_STARTED, downloadProgress: 0.0);
+      state: OtaUpgradeState.downloadNotStarted, downloadProgress: 0.0);
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 3), () => initPlatformState());
+    Future.delayed(const Duration(seconds: 3), () => initPlatformState());
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -38,7 +40,7 @@ class _MyAppState extends State<MyApp> {
       print(await OtaUpgradeHandler.getExternalFilesDir());
 
       _startNewAppDownload("my_flutter.apk");
-    } catch (e) {}
+    } catch (_) {}
   }
 
   @override
@@ -57,7 +59,7 @@ class _MyAppState extends State<MyApp> {
                     children: <Widget>[
                       Text(
                         "OTA Status: " + _getOtaStatus(),
-                        style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                        style: const TextStyle(color: Colors.grey, fontSize: 12.0),
                       ),
                     ],
                   ),
@@ -89,12 +91,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   String _getOtaStatus() {
-    if (currentEvent.state == OtaUpgradeState.DOWNLOAD_NOT_STARTED) {
+    if (currentEvent.state == OtaUpgradeState.downloadNotStarted) {
       return _versionControlResult;
     }
 
     switch (currentEvent.state) {
-      case OtaUpgradeState.DOWNLOADING:
+      case OtaUpgradeState.downloading:
         return currentEvent.downloadProgress.toInt().toString() + '%' + '\n';
       default:
         return currentEvent.state.toString();

@@ -7,7 +7,7 @@ import 'dart:isolate';
 
 class OtaUpgradeHandler {
   static const MethodChannel _channel =
-      const MethodChannel('ota_upgrade_handler');
+      MethodChannel('ota_upgrade_handler');
 
   static Future<String> get platformVersion async {
     final String version = await _channel.invokeMethod('getPlatformVersion');
@@ -36,10 +36,10 @@ class OtaUpgradeHandler {
               el is File && el.path.split("/").last.startsWith(fileName))
           .toList();
 
-      filesAppointedToDelete.forEach((el) {
+      for (var el in filesAppointedToDelete) {
         el.deleteSync();
-      });
-    } catch (e) {
+      }
+    } catch (_) {
       print('Could not delete the old files of app: ' + fileName);
     }
   }
@@ -57,7 +57,7 @@ class OtaUpgradeHandler {
     String fileNameOfDownload = fullDownloadUri.split('/').last;
 
     controller.sink.add(OtaUpgradeStatus(
-        state: OtaUpgradeState.DOWNLOAD_NOT_STARTED, downloadProgress: 0.0));
+        state: OtaUpgradeState.downloadNotStarted, downloadProgress: 0.0));
 
     var isolatedDownloadParameters = IsolatedDownloadParameters(
         downloadUrl: fullDownloadUri,
@@ -74,11 +74,11 @@ class OtaUpgradeHandler {
       controller.add(currStatus);
       //print('Data: ${currStatus.downloadProgress}');
 
-      if (currStatus.state == OtaUpgradeState.FINISHED_DOWNLOADING) {
+      if (currStatus.state == OtaUpgradeState.finishedDownloading) {
         print("Finished downloading from receive port");
         OtaUpgradeHandler.getExternalFilesDir().then((value) => print(value));
         controller.add(OtaUpgradeStatus(
-            state: OtaUpgradeState.INSTALLING, downloadProgress: 100.0));
+            state: OtaUpgradeState.installing, downloadProgress: 100.0));
         OtaUpgradeHandler.installApk(fileNameOfDownload)
             .then((value) => receivePort.close());
         // To trigger the on onDone Method
@@ -100,7 +100,7 @@ class OtaUpgradeHandler {
       if (i != null) {
         i.kill(priority: Isolate.immediate);
         i = null;
-        print('Terminated all isolates.');
+        print('Terminated isolate.');
       }
     }
   }
@@ -122,7 +122,7 @@ void isolatedDownload(IsolatedDownloadParameters parameters) async {
     // parameters.sendPort.send(
     //     'downloadProgress: ${downloaded / response.contentLength * 100}');
     parameters.sendPort.send(OtaUpgradeStatus(
-        state: OtaUpgradeState.DOWNLOADING,
+        state: OtaUpgradeState.downloading,
         downloadProgress: downloaded / response.contentLength * 100));
 
     chunks.add(chunk);
@@ -133,7 +133,7 @@ void isolatedDownload(IsolatedDownloadParameters parameters) async {
 
     // Save the file
     //File file = new File('$dir/$parameters.filename');
-    File file = new File(dir + '/' + parameters.fileName);
+    File file = File(dir + '/' + parameters.fileName);
     final Uint8List bytes = Uint8List(response.contentLength);
     int offset = 0;
     for (List<int> chunk in chunks) {
@@ -145,7 +145,7 @@ void isolatedDownload(IsolatedDownloadParameters parameters) async {
     // parameters.sendPort.send(
     //     'finishedDownloading: ${downloaded / response.contentLength * 100}');
     parameters.sendPort.send(OtaUpgradeStatus(
-        state: OtaUpgradeState.FINISHED_DOWNLOADING,
+        state: OtaUpgradeState.finishedDownloading,
         downloadProgress: downloaded / response.contentLength * 100));
 
     return;
@@ -166,15 +166,15 @@ class IsolatedDownloadParameters {
 }
 
 enum OtaUpgradeState {
-  DOWNLOAD_NOT_STARTED,
-  DOWNLOADING,
-  FINISHED_DOWNLOADING,
-  INSTALLING,
-  ERROR
+  downloadNotStarted,
+  downloading,
+  finishedDownloading,
+  installing,
+  error
 }
 
 class OtaUpgradeStatus {
-  OtaUpgradeState state = OtaUpgradeState.DOWNLOAD_NOT_STARTED;
+  OtaUpgradeState state = OtaUpgradeState.downloadNotStarted;
   double downloadProgress = 0.0;
   OtaUpgradeStatus({required this.state, required this.downloadProgress});
 }
