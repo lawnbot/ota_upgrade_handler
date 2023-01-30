@@ -15,10 +15,10 @@ class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  _MyAppState createState() => _MyAppState();
+  MyAppState createState() => MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> {
   final String _versionControlResult = "";
 
   OtaUpgradeStatus currentEvent = OtaUpgradeStatus(
@@ -58,7 +58,7 @@ class _MyAppState extends State<MyApp> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       Text(
-                        "OTA Status: " + _getOtaStatus(),
+                        "OTA Status: ${_getOtaStatus()}",
                         style: const TextStyle(color: Colors.grey, fontSize: 12.0),
                       ),
                     ],
@@ -71,7 +71,7 @@ class _MyAppState extends State<MyApp> {
 
   void _startNewAppDownload(String fileName) async {
     try {
-      String downloadUrl = "https://www.mywebsitedownload.com/" + fileName;
+      String downloadUrl = "https://www.mywebsitedownload.com/$fileName";
 
       print(await OtaUpgradeHandler.getExternalFilesDir());
       String location = await OtaUpgradeHandler.getExternalFilesDir();
@@ -97,7 +97,7 @@ class _MyAppState extends State<MyApp> {
 
     switch (currentEvent.state) {
       case OtaUpgradeState.downloading:
-        return currentEvent.downloadProgress.toInt().toString() + '%' + '\n';
+        return '${currentEvent.downloadProgress.toInt()}%\n';
       default:
         return currentEvent.state.toString();
     }

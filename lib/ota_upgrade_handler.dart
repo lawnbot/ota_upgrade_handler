@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'dart:typed_data';
 import 'dart:io';
 import 'dart:isolate';
 
@@ -40,7 +39,7 @@ class OtaUpgradeHandler {
         el.deleteSync();
       }
     } catch (_) {
-      print('Could not delete the old files of app: ' + fileName);
+      print('Could not delete the old files of app: $fileName');
     }
   }
 
@@ -133,7 +132,7 @@ void isolatedDownload(IsolatedDownloadParameters parameters) async {
 
     // Save the file
     //File file = new File('$dir/$parameters.filename');
-    File file = File(dir + '/' + parameters.fileName);
+    File file = File('$dir/${parameters.fileName}');
     final Uint8List bytes = Uint8List(response.contentLength);
     int offset = 0;
     for (List<int> chunk in chunks) {
