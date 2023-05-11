@@ -1,13 +1,13 @@
 name: ota_upgrade_handler
 description: Plugin to download an Android apk from the web and install it after the download.
-version: 0.0.3
+version: 0.0.4
 homepage: https://github.com/lawnbot/ota_upgrade_handler
 
 #publish_to: 'none'
 
 environment:
-  sdk: ">=2.14.0 <3.0.0"
-  flutter: ">=1.25.0"
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.3.0"
 
 dependencies:
   flutter:
